@@ -1,0 +1,19 @@
+__pycache__/
+*.pyc
+*.bak*
+*.log
+.ipynb_checkpoints/
+experiments/*/configs/_generated/
+# never commit data manifests, splits, images or weights
+data_splits/
+data/
+weights/
+*.parquet
+*.npz
+*.nii
+*.nii.gz
+*.zst
+*.safetensors
+*.pt
+*.pth
+checkpoint-*/

@@ -1,0 +1,26 @@
+# Core deep-learning stack
+torch
+torchvision
+transformers
+peft
+safetensors
+timm_3d
+
+# Medical imaging / IO
+monai
+nibabel
+acvl_utils          # nnU-Net cropping/bbox utilities
+zstandard           # .zst volume loading (img_utils/zst_utils.py)
+
+# Scientific / data
+numpy
+pandas
+scipy
+scikit-image
+scikit-learn
+pyarrow             # parquet IO
+
+# Utilities
+typed-argument-parser   # imported as `tap`
+tqdm
+matplotlib

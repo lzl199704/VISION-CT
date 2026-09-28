@@ -1,0 +1,51 @@
+hf_TrainingArguments:
+  dataloader_num_workers: 8
+  eval_steps: 1250
+  evaluation_strategy: steps
+  learning_rate: 5.0e-05
+  logging_dir: ${WEIGHTS_ROOT}/Step1_chest_ermi_sinai_0504_NO_AUG_updatedQA/logs
+  logging_steps: 500
+  lr_scheduler_type: cosine
+  max_steps: 75000
+  output_dir: ${WEIGHTS_ROOT}/Step1_chest_ermi_sinai_0504_NO_AUG_updatedQA/
+  per_device_eval_batch_size: 1
+  per_device_train_batch_size: 4
+  remove_unused_columns: false
+  save_steps: 5000
+  warmup_steps: 8000
+  weight_decay: 0.015
+input_file: ${DATA_ROOT}/Sinai_ERMI_chest_train_val_0504_final.parquet
+llm_args:
+  bert_encoder_layers: 4
+  model_class: BertModel
+  model_id: Simonlee711/Clinical_ModernBERT
+mixer_args:
+  d_model: 768
+  name: latent_mem
+  nhead: 8
+  num_layers: 1
+  vision_as_mem: false
+predict_transform:
+- name: Resize
+  spatial_size:
+  - 256
+  - 256
+  - 256
+train_transform:
+- name: Resize
+  spatial_size:
+  - 256
+  - 256
+  - 256
+vision_args:
+  feature_dim: 1280
+  llm_emb_dim: 768
+  model_args:
+    global_pool: ''
+    in_chans: 1
+    model_name: tf_efficientnetv2_b0.in1k
+    num_classes: 0
+    pretrained: true
+  model_class: EfficientNetViT
+  nhead: 8
+  seqlen: 514

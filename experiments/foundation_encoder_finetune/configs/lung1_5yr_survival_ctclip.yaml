@@ -1,0 +1,26 @@
+# CT-CLIP_v2 (CT-RATE chest-CT) foundation encoder -> downstream LUNG1 5-yr survival.
+# RUN WITH: python  # (CT-CLIP environment)
+encoder_source: ctclip
+ctclip_ckpt: ${BASELINES_ROOT}/CT-CLIP/CT-CLIP_v2.pt
+
+task: binary
+label_col: label
+pid_col: PatientID
+nifti_template: "${BENCHMARKS_ROOT}/NSCLC-Radiomics/image/{pid}/{pid}.nii.gz"          # raw LUNG1 nifti; encoder-specific preprocessing at load (LAS->RAS)
+
+train_csv: ${BENCHMARKS_ROOT}/NSCLC-Radiomics/lung1_5yr_survival_train.csv
+val_csv:   ${BENCHMARKS_ROOT}/NSCLC-Radiomics/lung1_5yr_survival_val.csv
+test_csv:  ${BENCHMARKS_ROOT}/NSCLC-Radiomics/lung1_5yr_survival_test.csv
+
+pos_weight: 3.4                  # ~18.5% positive
+freeze_encoder: false           # FULL FINE-TUNE (encoder + head) is the default
+learning_rate: 1.0e-4           # head LR (full fine-tune)
+encoder_lr_mult: 0.1            # encoder LR = learning_rate * this (discriminative)
+weight_decay: 0.01
+dropout: 0.1
+batch_size: 1                   # CTViT full fine-tune at 480^3 is heavy; 1 vol/step
+head_batch_size: 64
+epochs: 50
+num_workers: 8
+seed: 0
+output_dir: ${WEIGHTS_ROOT}/fe_runs/lung1_5yr_survival_ctclip

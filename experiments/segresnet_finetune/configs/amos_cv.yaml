@@ -1,0 +1,14 @@
+# SegResNet 5-fold CV on AMOS (fine-tune from wholeBody pretrained by default).
+dataset: amos
+pretrained: true                 # true = fine-tune wholeBody SegResNet; false = train from scratch
+pretrained_ckpt: ${DATA_ROOT}/benchmark_seg/bundles/wholeBody_ct_segmentation/models/model.pt
+patch: 96                        # train ROI (matches bundle highres)
+val_patch: 160                   # sliding-window val ROI
+batch_size: 2
+learning_rate: 1.0e-4
+weight_decay: 1.0e-5
+epochs: 100
+val_interval: 10
+num_workers: 8
+seed: 0
+output_dir: ${WEIGHTS_ROOT}/segresnet_runs/amos

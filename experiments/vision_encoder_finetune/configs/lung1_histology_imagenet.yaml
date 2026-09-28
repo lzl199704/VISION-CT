@@ -1,0 +1,30 @@
+# LUNG1 histology classification (multiclass). Uses the PRE-NORMALISED npz
+# (npz_histology_preprocessed, already [0,1]) -> prewindowed: true (no re-windowing).
+encoder_source: imagenet
+uniferum_ckpt: ${WEIGHTS_ROOT}/Step1_chest_ermi_sinai_0504_NO_AUG_updatedQA/checkpoint-75000/model.safetensors
+model_name: tf_efficientnetv2_b0.in1k
+
+task: multiclass
+label_col: label
+num_classes: 4           # adeno / squamous / large-cell / NOS (verify mapping in metadata)
+img_col: img_file_path
+
+train_csv: ${BENCHMARKS_ROOT}/NSCLC-Radiomics/nsclc_histology_train_preprocessed.csv
+val_csv:   ${BENCHMARKS_ROOT}/NSCLC-Radiomics/nsclc_histology_val_preprocessed.csv
+test_csv:  ${BENCHMARKS_ROOT}/NSCLC-Radiomics/nsclc_histology_test_preprocessed.csv
+
+prewindowed: true        # npz already normalised to [0,1]; window_center/width ignored
+window_center: -600
+window_width: 1500
+input_size: 256
+
+freeze_encoder: false
+learning_rate: 1.0e-4
+encoder_lr_mult: 0.1
+weight_decay: 0.01
+dropout: 0.1
+batch_size: 4
+epochs: 40
+num_workers: 8
+seed: 0
+output_dir: ${WEIGHTS_ROOT}/vf_runs/lung1_histology_imagenet
