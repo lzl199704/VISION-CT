@@ -79,10 +79,15 @@ Exact flag names are defined by each script's argument parser — see `--help`.
 
 ## Environment
 
-`Dockerfile.train` pins the stack used for training and evaluation (Python 3.10, torch 2.3.0+cu121,
-transformers 4.45, monai 1.3, timm 1.0.3, peft, timm_3d, pyarrow, SimpleITK, zstandard). Multi-GPU
-training uses DDP via `torchrun`. The language backbone `Simonlee711/Clinical_ModernBERT` is pulled
-from the Hugging Face Hub at runtime.
+```bash
+conda create -n visionct python=3.10 -y && conda activate visionct
+pip install -r requirements.txt
+```
+`requirements.txt` pins the versions used for training and evaluation (torch 2.3.0+cu121,
+transformers, monai, timm, peft, pyarrow, SimpleITK, zstandard). A CUDA-capable GPU is required;
+multi-GPU training uses DDP via `torchrun`. Alternatively build the pinned image with
+`docker build -f Dockerfile.train -t visionct_train:latest .`. The language backbone
+`Simonlee711/Clinical_ModernBERT` is downloaded from the Hugging Face Hub at first run.
 
 ## Weights
 
