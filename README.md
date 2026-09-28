@@ -57,25 +57,26 @@ the question text, the binary label and the segmentation-mask path. Point each s
 
 ## Usage (run from the repository root)
 
-```bash
-pip install -r requirements.txt          # or: docker build -f Dockerfile.train -t visionct_train:latest .
+Training scripts take `--config_file`; evaluation scripts take `--run_dir` (a directory holding
+`train_config.yaml` and `checkpoint-*/model.safetensors`, e.g. a downloaded weights folder or a
+training output directory) and `--val_file` (a parquet manifest). Predictions and metrics are
+written next to the checkpoint inside `run_dir`. Add `--devices 0,1` to choose GPUs and
+`--ckpt_name checkpoint-50000` to pick a checkpoint; see `--help` for all options.
 
+```bash
 # --- Chest (one stage) ---
-python bin/train_visionct_combined_chest.py --config configs/chest_train_config.yaml
-python bin/predict_visionct_combined_v2.py --config configs/chest_train_config.yaml \
-    --checkpoint <weights>/chest_multimodal --parquet <test>.parquet --out preds.parquet
+python bin/train_visionct_combined_chest.py --config_file configs/chest_train_config.yaml
+python bin/predict_visionct_combined_v2.py --run_dir <weights>/chest_multimodal --val_file <test>.parquet
 
 # --- Abdomen Step 1: segmentation pretraining ---
-python bin/train_semantic_seg_two_stage.py --config configs/abd_step1_pretrain_seg_config.yaml
-python bin/eval_pretrain_seg.py --config configs/abd_step1_pretrain_seg_config.yaml \
-    --checkpoint <weights>/abd_step1_seg_pretrain --parquet <seg_eval>.parquet --out dice.parquet
+python bin/train_semantic_seg_two_stage.py --config_file configs/abd_step1_pretrain_seg_config.yaml
+python bin/eval_pretrain_seg.py --run_dir <weights>/abd_step1_seg_pretrain --val_file <seg_eval>.parquet
 
-# --- Abdomen Step 2: multimodal finetuning (initialised from Step 1) ---
-python bin/train_semantic_seg_two_stage.py --config configs/abd_step2_contrast_config.yaml
-python bin/eval_finetune.py --config configs/abd_step2_contrast_config.yaml \
-    --checkpoint <weights>/abd_step2_contrast --parquet <test>.parquet --out preds.parquet
+# --- Abdomen Step 2: multimodal finetuning, initialised from Step 1 ---
+#     (`pretrain_checkpoint:` in the config points at the Step-1 model.safetensors)
+python bin/train_semantic_seg_two_stage.py --config_file configs/abd_step2_contrast_config.yaml
+python bin/eval_finetune.py --run_dir <weights>/abd_step2_contrast --val_file <test>.parquet
 ```
-Exact flag names are defined by each script's argument parser — see `--help`.
 
 ## Environment
 
