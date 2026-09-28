@@ -30,27 +30,6 @@ def patchify_3d(volume, patch_size):
 
     return patches
 
-def apply_brain_window_level(data):
-    lower_bound = 0 #window_center - window_width / 2
-    upper_bound = 80 # window_center + window_width / 2
-
-    # Apply window leveling
-    window_leveled_data = np.clip(data, lower_bound, upper_bound)
-
-    # Normalize to the range 0 to 1 (optional, can adjust based on output requirement)
-    #window_leveled_data = (window_leveled_data - lower_bound) / window_width
-    return window_leveled_data
-def apply_st_window_level(data):
-    lower_bound = -150 #window_center - window_width / 2
-    upper_bound = 250 # window_center + window_width / 2
-
-    # Apply window leveling
-    window_leveled_data = np.clip(data, lower_bound, upper_bound)
-
-    # Normalize to the range 0 to 1 (optional, can adjust based on output requirement)
-    #window_leveled_data = (window_leveled_data - lower_bound) / window_width
-    return window_leveled_data
-
 def apply_lung_window_level(data):
     window_center= -600
     window_width = 1500
@@ -64,40 +43,6 @@ def apply_lung_window_level(data):
     #window_leveled_data = (window_leveled_data - lower_bound) / window_width
     return window_leveled_data
     
-def apply_abd_window_level(data):
-    window_center= -600
-    window_width = 1500
-    lower_bound = -160.0 #window_center - window_width / 2
-    upper_bound = 240.0 # window_center + window_width / 2
-
-    # Apply window leveling
-    window_leveled_data = np.clip(data, lower_bound, upper_bound)
-
-    # Normalize to the range 0 to 1 (optional, can adjust based on output requirement)
-    #window_leveled_data = (window_leveled_data - lower_bound) / window_width
-    return window_leveled_data
-def unpatchify_3d(patches, volume_shape, patch_size):
-    D, H, W = volume_shape
-    pD, pH, pW = patch_size
-
-    assert (
-        D % pD == 0 and H % pH == 0 and W % pW == 0
-    ), "Volume must be divisible by patch size"
-
-    nD, nH, nW = D // pD, H // pH, W // pW
-    N = nD * nH * nW
-    assert patches.shape == (
-        N,
-        pD * pH * pW,
-    ), "Patches shape doesn't match expected size"
-
-    # Reshape to 6D
-    patches = patches.reshape(nD, nH, nW, pD, pH, pW)
-    patches = patches.transpose(0, 3, 1, 4, 2, 5)  # → (nD, pD, nH, pH, nW, pW)
-    volume = patches.reshape(D, H, W)
-
-    return volume
-
 
 @dataclass
 class VQABinaryDataCollator(object):
@@ -116,7 +61,6 @@ class VQABinaryDataCollator(object):
         #end = time.time()
         #print(f"Data collator time: {end - start:.4f}s")
         return result
-
 
 class VQAMaskDataset(Dataset):
     def __init__(
@@ -166,7 +110,6 @@ class VQAMaskDataset(Dataset):
             img = np.load(img_file)['arr']
             #img = np.float16(img)
             #img = np.clip(img, -1000, 1000)
-            #img = apply_abd_window_level(img)
             return img
         else:
             raise ValueError(
@@ -300,6 +243,4 @@ class VQAMaskDataset(Dataset):
 
             
         return inputs
-
-
 

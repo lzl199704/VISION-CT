@@ -18,8 +18,8 @@ from bin.utils import (
     load_yaml,
     save_yaml,
 )
-from data_utils.combined_vqa_dataset_path import VQABinaryDataCollator, VQAMaskDataset
-from models.combined_multimodal_models_semantic_v3 import VisionCT
+from data_utils.combined_vqa_dataset_abd import VQABinaryDataCollator, VQAMaskDataset
+from models.combined_multimodal_models_abd import VisionCT
 
 def load_vision_decoder_weights(model, ckpt_path):
     print(f"Loading vision encoder and decoder weights from {ckpt_path}...")

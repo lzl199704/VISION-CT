@@ -3,7 +3,6 @@ __pycache__/
 *.bak*
 *.log
 .ipynb_checkpoints/
-experiments/*/configs/_generated/
 # never commit data manifests, splits, images or weights
 data_splits/
 data/

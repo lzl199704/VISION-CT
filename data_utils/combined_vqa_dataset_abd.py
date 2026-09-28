@@ -127,8 +127,8 @@ class VQAMaskDataset(Dataset):
         img = torch.tensor(img).unsqueeze(0)
         return img
 
-    # organs that get the LUNG window; must stay identical to combined_vqa_dataset_semantic.py
-    # (the eval dataset) so train-time and eval-time intensities match for chest rows.
+    # organs that get the LUNG window; is shared by train and eval
+    # so train-time and eval-time intensities match.
     LUNG_WINDOW_ORGANS = ('chest', 'lung', 'heart', 'thoracic aorta')
 
     def get_img_mask(self, img_file: str, seg_file: str, transform: None, seg_indices, org_name: str = None):

@@ -38,8 +38,8 @@ from tqdm import tqdm
 from transformers import AutoTokenizer
 
 from bin.utils import create_transform, load_yaml
-from data_utils.combined_vqa_dataset_semantic import VQABinaryDataCollator, VQAMaskDataset
-from models.combined_multimodal_models_semantic_v3 import VisionCT
+from data_utils.combined_vqa_dataset_abd import VQABinaryDataCollator, VQAMaskDataset
+from models.combined_multimodal_models_abd import VisionCT
 from models.utils import load_safetensors
 
 mp.set_start_method("spawn", force=True)

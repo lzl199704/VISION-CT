@@ -35,9 +35,9 @@ VISION-CT/
 │   └── utils.py                                # config loading, transforms, checkpoint I/O
 ├── models/                                     # VISION-CT model, vision backbone, losses
 │   ├── combined_multimodal_models.py           # chest VISION-CT
-│   ├── combined_multimodal_models_semantic_v3.py  # abdomen VISION-CT (segmentation-grounded)
+│   ├── combined_multimodal_models_abd.py    # abdomen VISION-CT (segmentation-grounded)
 │   └── vision_models.py, loss_fcts.py, utils.py
-├── data_utils/                                 # VQA + mask datasets, anatomical label map
+├── data_utils/                                 # datasets (combined_vqa_dataset_chest / _abd), anatomical label map
 ├── img_utils/                                  # CT volume loading (.zst) and windowing
 ├── configs/                                    # training config for each of the three stages
 ├── Dockerfile.train                            # pinned training/evaluation environment
@@ -83,7 +83,7 @@ Exact flag names are defined by each script's argument parser — see `--help`.
 conda create -n visionct python=3.10 -y && conda activate visionct
 pip install -r requirements.txt
 ```
-`requirements.txt` pins the versions used for training and evaluation (torch 2.3.0+cu121,
+`requirements.txt` pins the versions used for training and evaluation (Python 3.10, torch 2.3.0 / CUDA 12.1,
 transformers, monai, timm, peft, pyarrow, SimpleITK, zstandard). A CUDA-capable GPU is required;
 multi-GPU training uses DDP via `torchrun`. Alternatively build the pinned image with
 `docker build -f Dockerfile.train -t visionct_train:latest .`. The language backbone

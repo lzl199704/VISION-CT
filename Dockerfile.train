@@ -1,28 +1,15 @@
-# Training/eval image for the VISION-CT CT pipelines (chest, abdomen, combined chest+abdomen).
-#
-# Base `vlm3d_abnclass_r8` already carries the pinned model stack that matches this host's
-# NVIDIA driver 535.54.03 / CUDA 12.2:  python 3.10, torch 2.3.0+cu121, transformers 4.45.0,
-# monai 1.3.0, timm 1.0.3, peft, typed-argument-parser, nibabel, scikit-image/-learn, scipy.
-# This layer only adds what the training path additionally imports:
-#   timm_3d      models/vision_models.py  -> timm_3d.create_model (the 3D EfficientNetV2 backbone)
-#   pyarrow      parquet manifests
-#   matplotlib, SimpleITK, acvl_utils, zstandard   img_utils/img_process.py, img_utils/zst_utils.py
+# Training / evaluation image for VISION-CT (chest model and two-stage abdomen model).
 #
 # Build:  docker build -f Dockerfile.train -t visionct_train:latest .
-# Run  :  docker run --rm --gpus '"device=0,1,2,3,4,5,6,7"' --shm-size 32g \
-#           -v /raid:/raid -v $PWD:/work -w /work visionct_train:latest \
-#           bin/train_semantic_seg_two_stage.py --config_file configs/chest_abd_step1_pretrain_seg_config.yaml
-FROM vlm3d_abnclass_r8:latest
+# Run  :  docker run --rm --gpus all --shm-size 32g \
+#           -v <data_root>:/data -v $PWD:/work -w /work visionct_train:latest \
+#           bin/train_semantic_seg_two_stage.py --config_file configs/abd_step1_pretrain_seg_config.yaml
+FROM pytorch/pytorch:2.3.0-cuda12.1-cudnn8-runtime
 
-RUN pip install --no-cache-dir \
-        timm_3d==1.0.1 \
-        pyarrow==16.1.0 \
-        matplotlib==3.8.4 \
-        SimpleITK==2.3.1 \
-        acvl_utils==0.2 \
-        zstandard==0.22.0 \
- && python -c "import timm_3d, pyarrow, matplotlib, SimpleITK, acvl_utils, zstandard; print('extra deps OK')"
+WORKDIR /work
+COPY requirements.txt /work/requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt \
+ && python -c "import transformers, monai, timm_3d, peft, pyarrow, SimpleITK, acvl_utils, zstandard, tap; print('deps OK')"
 
 ENV PYTHONDONTWRITEBYTECODE=1
-WORKDIR /work
 ENTRYPOINT ["python"]
