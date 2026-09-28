@@ -52,7 +52,7 @@ from the repository root (they call `sys.path.append(os.getcwd())`).
 
 Each manifest is a parquet table with one row per (study, finding) question: the CT volume path,
 the question text, the binary label and the segmentation-mask path. Point each script's
-`--parquet` argument (and `input_file:` in `configs/*.yaml`) at your own manifest; the configs use
+`--val_file` argument (and `input_file:` in `configs/*.yaml`) at your own manifest; the configs use
 `${DATA_ROOT}` / `${WEIGHTS_ROOT}` placeholders for the data and checkpoint locations.
 
 ## Usage (run from the repository root)
