@@ -1,6 +1,6 @@
-# Uniferum — segmentation-grounded multimodal CT model
+# VISION-CT — segmentation-grounded multimodal CT model
 
-Reference implementation for the Uniferum / RadViLLA CT pathology model: a multimodal
+Reference implementation for the VISION-CT CT pathology model: a multimodal
 architecture that couples a 3D vision encoder–decoder (segmentation) with a language model
 (pathology question answering), trained in two stages for the abdomen and a single stage for
 the chest.
@@ -13,7 +13,7 @@ the train/test data manifests are kept separately (see **Data** below).
 
 | Pipeline | Stages | Train script | Eval / predict script | Config |
 |---|---|---|---|---|
-| **Chest** | one stage (multimodal) | `bin/train_uniferum_radvilla_combined_chest.py` | `bin/predict_uniferum_combined_v2.py` | `configs/chest_train_config.yaml` |
+| **Chest** | one stage (multimodal) | `bin/train_visionct_combined_chest.py` | `bin/predict_visionct_combined_v2.py` | `configs/chest_train_config.yaml` |
 | **Abdomen — Step 1** | segmentation pretrain | `bin/train_semantic_seg_two_stage.py` (stage 1) | `bin/eval_pretrain_seg.py` | `configs/abd_step1_pretrain_seg_config.yaml` |
 | **Abdomen — Step 2 (contrast)** | multimodal finetune | `bin/train_semantic_seg_two_stage.py` (stage 2) | `bin/eval_finetune.py` | `configs/abd_step2_contrast_config.yaml` |
 | **Abdomen — Step 2 (non-contrast)** | multimodal finetune | `bin/train_semantic_seg_two_stage.py` (stage 2) | `bin/eval_finetune.py` | `configs/abd_step2_noncontrast_config.yaml` |
@@ -43,17 +43,17 @@ the two specialists at equal total compute.
 ## Directory layout
 
 ```
-uniferum_release/
+VISION-CT/
 ├── bin/                     # entry-point scripts + shared utils
-│   ├── train_uniferum_radvilla_combined_chest.py   # chest: train
-│   ├── predict_uniferum_combined_v2.py             # chest: inference
+│   ├── train_visionct_combined_chest.py   # chest: train
+│   ├── predict_visionct_combined_v2.py             # chest: inference
 │   ├── train_semantic_seg_two_stage.py            # abdomen: train (step 1 & 2)
 │   ├── eval_pretrain_seg.py                        # abdomen: eval step-1 segmentation (Dice)
 │   ├── eval_finetune.py                            # abdomen: eval step-2 (AUROC / detection)
 │   └── utils.py                                    # config loading, transforms, checkpoint I/O
-├── models/                  # Uniferum model + vision backbone + losses
-│   ├── combined_multimodal_models.py               # chest Uniferum
-│   ├── combined_multimodal_models_semantic_v3.py   # abdomen Uniferum (segmentation-grounded)
+├── models/                  # VISION-CT model + vision backbone + losses
+│   ├── combined_multimodal_models.py               # chest VISION-CT
+│   ├── combined_multimodal_models_semantic_v3.py   # abdomen VISION-CT (segmentation-grounded)
 │   ├── vision_models.py, loss_fcts.py, utils.py
 ├── data_utils/              # VQA + mask datasets, anatomical label map
 ├── img_utils/               # CT volume loading (.zst) and windowing/preprocessing
@@ -71,7 +71,7 @@ from the repository root** (they call `sys.path.append(os.getcwd())`).
 
 Train/test data manifests are **kept separately from this code release** (they contain internal
 patient IDs and file paths). An organized copy currently lives at
-`${HOME}/projects/RadVILLA/uniferum_data/`, grouped by pipeline:
+`${HOME}/projects/VISION-CT/data/`, grouped by pipeline:
 
 | Folder | Train | Test |
 |---|---|---|
@@ -92,8 +92,8 @@ public benchmarks; Dubai = external. Point each script's `--parquet` (and the `i
 pip install -r requirements.txt
 
 # --- Chest (one stage) ---
-python bin/train_uniferum_radvilla_combined_chest.py --config configs/chest_train_config.yaml
-python bin/predict_uniferum_combined_v2.py --config configs/chest_train_config.yaml \
+python bin/train_visionct_combined_chest.py --config configs/chest_train_config.yaml
+python bin/predict_visionct_combined_v2.py --config configs/chest_train_config.yaml \
     --checkpoint <chest_ckpt>/checkpoint-75000 --parquet data/chest/test_ermi.parquet --out preds.parquet
 
 # --- Abdomen Step 1: segmentation pretrain ---
@@ -111,7 +111,7 @@ python data_splits/build_combined_splits.py --tag 0903        # rebuild splits (
 
 DK="docker run --rm --gpus \"device=0,1,2,3\" --shm-size 64g --ipc=host --ulimit memlock=-1 \
   --entrypoint torchrun -e CUDA_DEVICE_ORDER=PCI_BUS_ID -e HF_HOME=/hf -e OMP_NUM_THREADS=8 \
-  -v /raid:/raid -v $PWD:$PWD -v $HOME/.cache/huggingface:/hf -w $PWD uniferum_train:latest"
+  -v /raid:/raid -v $PWD:$PWD -v $HOME/.cache/huggingface:/hf -w $PWD visionct_train:latest"
 eval $DK --nproc_per_node 4 bin/train_semantic_seg_two_stage.py \
     --config_file configs/chest_abd_step1_pretrain_seg_config.yaml     # 15k steps, ~7 h
 eval $DK --nproc_per_node 4 bin/train_semantic_seg_two_stage.py \
@@ -127,12 +127,12 @@ python bin/eval_finetune.py --run_dir ${WEIGHTS_ROOT}/Step2_Finetune_Multimodal_
 ## Environment (2026-09-03)
 No conda env on this host has the complete training stack (`llava-med` has transformers 4.41, too old for
 the ModernBERT tokenizer; `${DATA_ROOT}/vlmenv` has a torch that needs `libcudart.so.11.0`). Training and
-evaluation run in the **`uniferum_train` Docker image**, built from [`Dockerfile.train`](Dockerfile.train)
+evaluation run in the **`visionct_train` Docker image**, built from [`Dockerfile.train`](Dockerfile.train)
 = the pinned `vlm3d_abnclass_r8` stack (python 3.10, torch 2.3.0+cu121, transformers 4.45, monai 1.3,
 timm 1.0.3, peft) plus `timm_3d`, `pyarrow`, `matplotlib`, `SimpleITK`, `acvl_utils`, `zstandard`:
 
 ```bash
-docker build -f Dockerfile.train -t uniferum_train:latest .
+docker build -f Dockerfile.train -t visionct_train:latest .
 ```
 
 The container runs as uid 999, so mount world-readable paths and keep scratch/output under `/raid`.

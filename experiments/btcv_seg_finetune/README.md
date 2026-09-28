@@ -1,6 +1,6 @@
 # BTCV segmentation fine-tuning — 5-fold cross-validation
 
-**Goal.** Fine-tune the Uniferum Stage-1 segmentation model on BTCV and push its organ-segmentation
+**Goal.** Fine-tune the VISION-CT Stage-1 segmentation model on BTCV and push its organ-segmentation
 Dice as high as possible, reported by **5-fold cross-validation over all 30 BTCV patients**.
 Everything runs with the existing release scripts; you edit a YAML config and read one number.
 
@@ -13,7 +13,7 @@ The splits are pre-made in `${DATA_ROOT}/step1/btcv_cv5/` (fixed seed 42).
 ## Background (what "good" looks like)
 | model | BTCV macro Dice | note |
 |---|---|---|
-| Uniferum zero-shot | 0.843 | starting point (no fine-tuning) — **beat this** |
+| VISION-CT zero-shot | 0.843 | starting point (no fine-tuning) — **beat this** |
 | TotalSegmentator v2 | 0.891 | **leakage-free** specialist — the fair target |
 | SegResNet | 0.851 | leakage-free |
 | Swin UNETR | 0.900 | **trained on BTCV** (test leaked) — not a fair target |
@@ -60,7 +60,7 @@ as-is. Cosine LR decays to 0 at `max_steps`. Base configs in `configs/`: `btcv_b
 
 ## Run (from the release repo root)
 
-`cd ${HOME}/projects/RadVILLA/uniferum_release`
+`cd <repo-root>`
 
 **1. Expand a base config into the 5 per-fold configs** (sets input_file + output_dir per fold):
 ```bash

@@ -1,14 +1,14 @@
 # AMOS segmentation fine-tuning — hyperparameter tuning
 
-**Goal.** Fine-tune the Uniferum Stage-1 segmentation model on the AMOS training split and push
+**Goal.** Fine-tune the VISION-CT Stage-1 segmentation model on the AMOS training split and push
 its organ-segmentation Dice on the AMOS test set as high as possible. Everything runs with the
 existing release scripts; you only edit a YAML config and read one number.
 
 ## Background (what "good" looks like)
 | model | AMOS macro Dice | note |
 |---|---|---|
-| Uniferum zero-shot | 0.839 | starting point (no fine-tuning) |
-| **Uniferum fine-tuned (current best)** | **0.876** | lr 3e-5, 6k steps — your baseline to beat |
+| VISION-CT zero-shot | 0.839 | starting point (no fine-tuning) |
+| **VISION-CT fine-tuned (current best)** | **0.876** | lr 3e-5, 6k steps — your baseline to beat |
 | TotalSegmentator v2 | 0.905 | **leakage-free** specialist — the fair target |
 | SegResNet | 0.861 | leakage-free |
 | VISTA3D / SuPreM | 0.919 / 0.910 | **trained on AMOS** (test leaked) — not fair targets |
@@ -41,7 +41,7 @@ run its own folder or they overwrite each other).
 
 Train (8 GPUs):
 ```bash
-cd ${HOME}/projects/RadVILLA/uniferum_release
+cd <repo-root>
 torchrun --nproc_per_node=8 bin/train_semantic_seg_two_stage.py \
   --config_file experiments/amos_seg_finetune/configs/base_lr3e5_6k.yaml
 ```

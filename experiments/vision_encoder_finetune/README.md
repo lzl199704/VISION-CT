@@ -1,6 +1,6 @@
-# Vision-encoder fine-tuning — chest-Uniferum vs ImageNet
+# Vision-encoder fine-tuning — chest VISION-CT vs ImageNet
 
-**Goal.** Test whether the **chest-Uniferum vision encoder** (learned from chest CT + reports) is a
+**Goal.** Test whether the **chest VISION-CT vision encoder** (learned from chest CT + reports) is a
 better downstream representation than the **same architecture initialised from ImageNet**. We take an
 identical 3D backbone (timm_3d `tf_efficientnetv2_b0`, `in_chans=1`), attach a classification head,
 fine-tune on a downstream classification task, and compare the two initialisations under identical
@@ -11,11 +11,11 @@ vision_encoder_finetune/
 ├── README.md
 ├── train_classifier.py          # backbone + head, loads either encoder, trains, prints test metrics
 └── configs/
-    ├── uniferum_encoder.yaml     # encoder_source: uniferum (checkpoint-75000)
+    ├── visionct_encoder.yaml     # encoder_source: visionct (checkpoint-75000)
     └── imagenet_encoder.yaml     # encoder_source: imagenet  (same HP — the control)
 ```
 
-The chest-Uniferum weights come from `checkpoint-75000/model.safetensors` (the script loads the 418
+The chest VISION-CT weights come from `checkpoint-75000/model.safetensors` (the script loads the 418
 `vision_model.model.*` keys into the backbone). ImageNet is `timm_3d ... pretrained=True`.
 
 ## 1. Your CSVs
@@ -45,10 +45,10 @@ identical across both encoder sources.
 
 ## 3. Run (from the release repo root)
 ```bash
-cd ${HOME}/projects/RadVILLA/uniferum_release
-# Uniferum encoder
+cd <repo-root>
+# VISION-CT encoder
 python experiments/vision_encoder_finetune/train_classifier.py \
-    --config experiments/vision_encoder_finetune/configs/uniferum_encoder.yaml
+    --config experiments/vision_encoder_finetune/configs/visionct_encoder.yaml
 # ImageNet control (same hyperparameters)
 python experiments/vision_encoder_finetune/train_classifier.py \
     --config experiments/vision_encoder_finetune/configs/imagenet_encoder.yaml
@@ -62,7 +62,7 @@ Do it in two stages, and run every setting for **both** encoders:
 
 **Stage A — linear probe (encoder frozen, `freeze_encoder: true`).**
 Trains only the head, so it measures representation quality directly and is cheap. Sweep `learning_rate`
-(1e-3, 3e-4, 1e-4), `weight_decay`, `dropout`. This alone often answers "is the Uniferum encoder better?"
+(1e-3, 3e-4, 1e-4), `weight_decay`, `dropout`. This alone often answers "is the VISION-CT encoder better?"
 
 **Stage B — full fine-tune (`freeze_encoder: false`).**
 Use **discriminative LR**: head at `learning_rate`, encoder at `learning_rate * encoder_lr_mult`
@@ -79,7 +79,7 @@ Use **discriminative LR**: head at `learning_rate`, encoder at `learning_rate * 
 - Select on **validation**, report **test** (the script does best-val selection).
 - Report the metric matching the task (AUROC for binary/multi-label; accuracy + macro-AUROC for multi-class),
   and keep a log: `(encoder_source, stage, HP) → val, test`.
-- Headline result = best Uniferum vs best ImageNet on the **test** set, both selected on val.
+- Headline result = best VISION-CT vs best ImageNet on the **test** set, both selected on val.
 
 ## 5. Environment
 Run with the model env (has `torch`, `timm_3d`, `safetensors`, `pandas`, `scikit-learn`), e.g.
@@ -93,8 +93,8 @@ A concrete downstream benchmark with data + splits already prepared on the clust
 
 | Config | Task | CSVs | npz | notes |
 |---|---|---|---|---|
-| `lung1_5yr_survival_{uniferum,imagenet}.yaml` | binary (5-yr overall survival, >1826 d) | `lung1_5yr_survival_{train,val,test}.csv` (155/39/200) | `npz_5yr_survival/` **raw HU** | ~18.5% positive → `pos_weight: 3.4`; volume windowed at load (`prewindowed: false`) |
-| `lung1_histology_{uniferum,imagenet}.yaml` | multiclass (4 histology classes) | `nsclc_histology_{train,val,test}_preprocessed.csv` (256/55/55) | `npz_histology_preprocessed/` **already [0,1]** | `prewindowed: true` (no re-windowing) |
+| `lung1_5yr_survival_{visionct,imagenet}.yaml` | binary (5-yr overall survival, >1826 d) | `lung1_5yr_survival_{train,val,test}.csv` (155/39/200) | `npz_5yr_survival/` **raw HU** | ~18.5% positive → `pos_weight: 3.4`; volume windowed at load (`prewindowed: false`) |
+| `lung1_histology_{visionct,imagenet}.yaml` | multiclass (4 histology classes) | `nsclc_histology_{train,val,test}_preprocessed.csv` (256/55/55) | `npz_histology_preprocessed/` **already [0,1]** | `prewindowed: true` (no re-windowing) |
 
 Two config knobs added for these:
 - **`prewindowed`** — `true` if the npz is already normalised to [0,1] (skips HU windowing); `false` for raw-HU npz (applies `window_center`/`window_width`). Must be identical across both encoders.
@@ -102,15 +102,15 @@ Two config knobs added for these:
 
 Run (from the release repo root), both encoders with the **same** grid:
 ```bash
-cd ${HOME}/projects/RadVILLA/uniferum_release
+cd <repo-root>
 # 5-yr survival
-python experiments/vision_encoder_finetune/train_classifier.py --config experiments/vision_encoder_finetune/configs/lung1_5yr_survival_uniferum.yaml
+python experiments/vision_encoder_finetune/train_classifier.py --config experiments/vision_encoder_finetune/configs/lung1_5yr_survival_visionct.yaml
 python experiments/vision_encoder_finetune/train_classifier.py --config experiments/vision_encoder_finetune/configs/lung1_5yr_survival_imagenet.yaml
 # histology
-python experiments/vision_encoder_finetune/train_classifier.py --config experiments/vision_encoder_finetune/configs/lung1_histology_uniferum.yaml
+python experiments/vision_encoder_finetune/train_classifier.py --config experiments/vision_encoder_finetune/configs/lung1_histology_visionct.yaml
 python experiments/vision_encoder_finetune/train_classifier.py --config experiments/vision_encoder_finetune/configs/lung1_histology_imagenet.yaml
 ```
-Headline = best Uniferum vs best ImageNet on **test**, both selected on val (see §4 for the sweep).
-Note: the data root is local per-machine disk — make sure the `uniferum_ckpt` safetensors exists at that
+Headline = best VISION-CT vs best ImageNet on **test**, both selected on val (see §4 for the sweep).
+Note: the data root is local per-machine disk — make sure the `visionct_ckpt` safetensors exists at that
 path on the machine you run on (copy it there if not). The prior intern handoff (data pipeline, GTV-mask
 regeneration, cohort/label definitions) lives in `NSCLC-Radiomics/HANDOFF.md`.

@@ -23,7 +23,7 @@
 #        batch 32, identical to every published run):
 #   docker run --rm --gpus '"device=0,1,2,3"' --shm-size 64g --ipc=host --ulimit memlock=-1 \
 #     --entrypoint torchrun -e CUDA_DEVICE_ORDER=PCI_BUS_ID -e HF_HOME=/hf -e OMP_NUM_THREADS=8 \
-#     -v /raid:/raid -v $PWD:$PWD -v $HOME/.cache/huggingface:/hf -w $PWD uniferum_train:latest \
+#     -v /raid:/raid -v $PWD:$PWD -v $HOME/.cache/huggingface:/hf -w $PWD visionct_train:latest \
 #     --nproc_per_node 4 bin/train_semantic_seg_two_stage.py --config_file configs/chest_abd_step1_pretrain_seg_config.yaml
 # GPU note: this host has TWO broken NVLink P2P pairs, (4,5) and (6,7). NCCL fails with "unhandled cuda
 #        error" on any GPU set containing both members of either pair, so 8-GPU runs are impossible until

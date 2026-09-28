@@ -1,7 +1,7 @@
 # Foundation-encoder fine-tuning — Merlin & CT-CLIP downstream
 
 **Goal.** Benchmark two *published 3D CT foundation vision encoders* as downstream
-representations on a CT classification task, next to the chest-Uniferum vs ImageNet
+representations on a CT classification task, next to the chest VISION-CT vs ImageNet
 comparison in [`../vision_encoder_finetune`](../vision_encoder_finetune):
 
 | encoder_source | model | pretraining | feature | native input |
@@ -9,7 +9,7 @@ comparison in [`../vision_encoder_finetune`](../vision_encoder_finetune):
 | `merlin` | Merlin (Stanford) I3-ResNet152 | abdominal CT + reports/EHR | 2048-d image embedding | 224×224×160, spacing (1.5,1.5,3), HU[-1000,1000]→[0,1] |
 | `ctclip` | CT-CLIP_v2 CTViT | CT-RATE chest CT + reports | 512-d mean-pooled tokens | 240×480×480, spacing (0.75,0.75,1.5), HU[-1000,1000]→[-1,1] |
 
-Unlike the sibling kit (same architecture, Uniferum-vs-ImageNet init), **these are different
+Unlike the sibling kit (same architecture, VISION-CT-vs-ImageNet init), **these are different
 architectures with their own preprocessing** — so this answers "*which pretrained encoder transfers
 best?*", not a controlled init comparison. Each encoder loads its published weights, preprocesses the
 **raw** volume with its own recipe (monai; reorients LAS→RAS), emits a pooled feature, and we train a
@@ -35,13 +35,13 @@ Both have `torch, monai, nibabel, pandas, scikit-learn, pyyaml`. Merlin weights 
 
 ## 2. Data
 Configs point at raw LUNG1 / NSCLC-Radiomics volumes via a `nifti_template` (built from the CSV
-`PatientID`), so each encoder does its *own* preprocessing — do **not** reuse the 256³ Uniferum npz here.
+`PatientID`), so each encoder does its *own* preprocessing — do **not** reuse the 256³ VISION-CT npz here.
 - `nifti_template: .../NSCLC-Radiomics/image/{pid}/{pid}.nii.gz` (raw HU, LAS → reoriented to RAS)
 - Labels/splits: the same CSVs as the sibling kit (`lung1_5yr_survival_*` binary; `nsclc_histology_*_preprocessed` multiclass, 4 classes).
 
 ## 3. Run
 ```bash
-cd ${HOME}/projects/RadVILLA/uniferum_release
+cd <repo-root>
 # Merlin
 python  # (Merlin environment) experiments/foundation_encoder_finetune/train_foundation_classifier.py \
     --config experiments/foundation_encoder_finetune/configs/lung1_5yr_survival_merlin.yaml
@@ -76,7 +76,7 @@ binary (LUNG1 survival ~18.5% positive) tune `pos_weight` (≈ n_neg/n_pos). Sel
   as in the sibling kit's README §2.
 
 ## 7. Cross-kit comparison
-For a single downstream table across all four encoders, run **Uniferum** and **ImageNet** with the
+For a single downstream table across all four encoders, run **VISION-CT** and **ImageNet** with the
 sibling kit (`../vision_encoder_finetune`, timm_3d backbone) and **Merlin** and **CT-CLIP** here, on the
 same LUNG1 splits, and compare test AUROC. Note the encoders differ in architecture and input size, so
 report those alongside the numbers.

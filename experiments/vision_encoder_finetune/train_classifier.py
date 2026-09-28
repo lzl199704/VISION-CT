@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
 Fine-tune a 3D vision encoder on a downstream CT classification task, to compare the
-**chest-Uniferum** vision encoder (from checkpoint-75000) against the **same timm_3d
+**chest VISION-CT** vision encoder (from checkpoint-75000) against the **same timm_3d
 architecture with ImageNet weights**.
 
 Supports binary / multi-class / multi-label classification — set `task` in the config.
 The backbone is identical in both cases (timm_3d tf_efficientnetv2_b0, in_chans=1); only the
 initial weights differ, so any difference in downstream accuracy reflects the pre-training.
 
-Usage:  python train_classifier.py --config configs/uniferum_encoder.yaml
+Usage:  python train_classifier.py --config configs/visionct_encoder.yaml
 """
 import argparse, os, yaml, numpy as np, pandas as pd, torch, torch.nn as nn
 import torch.nn.functional as F
@@ -18,16 +18,16 @@ from safetensors.torch import load_file
 from sklearn.metrics import roc_auc_score, accuracy_score
 
 # ----------------------------- model -----------------------------
-def build_encoder(source, uniferum_ckpt, model_name):
-    """source: 'uniferum' (load vision_model.model.* from checkpoint) or 'imagenet' (timm pretrained)."""
+def build_encoder(source, visionct_ckpt, model_name):
+    """source: 'visionct' (load vision_model.model.* from checkpoint) or 'imagenet' (timm pretrained)."""
     backbone = timm_3d.create_model(model_name, pretrained=(source == 'imagenet'),
                                     in_chans=1, num_classes=0, global_pool='avg')
-    if source == 'uniferum':
-        sd = load_file(uniferum_ckpt)
+    if source == 'visionct':
+        sd = load_file(visionct_ckpt)
         enc = {k.replace('vision_model.model.', ''): v for k, v in sd.items()
                if k.startswith('vision_model.model.')}
         missing, unexpected = backbone.load_state_dict(enc, strict=False)
-        print(f'[encoder=uniferum] loaded {len(enc)} keys | missing {len(missing)} | unexpected {len(unexpected)}')
+        print(f'[encoder=visionct] loaded {len(enc)} keys | missing {len(missing)} | unexpected {len(unexpected)}')
         assert len(enc) > 300, 'expected ~418 vision_model.model.* keys — check the checkpoint path'
     else:
         print('[encoder=imagenet] timm_3d ImageNet-inflated weights')
@@ -102,7 +102,7 @@ def main():
     dev = 'cuda' if torch.cuda.is_available() else 'cpu'
     torch.manual_seed(c.get('seed', 0))
 
-    backbone, feat = build_encoder(c['encoder_source'], c.get('uniferum_ckpt'), c['model_name'])
+    backbone, feat = build_encoder(c['encoder_source'], c.get('visionct_ckpt'), c['model_name'])
     n_out = len(c['label_cols']) if c['task'] == 'multilabel' else (c['num_classes'] if c['task'] == 'multiclass' else 1)
     model = Classifier(backbone, feat, n_out, c.get('dropout', 0.1)).to(dev)
 

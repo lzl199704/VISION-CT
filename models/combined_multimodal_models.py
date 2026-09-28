@@ -103,7 +103,7 @@ def setup_mixer(mixer_config):
         return LatentMemLayer(mixer_config)
 
 
-class Uniferum(BertModel):
+class VisionCT(BertModel):
     config_class = BertConfig
 
     def __init__(self, config):

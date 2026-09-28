@@ -12,7 +12,7 @@ Usage:
 """
 import sys, glob, os, pandas as pd, numpy as np
 
-REF = {'zero_shot_uniferum': 0.843, 'TotalSeg_v2': 0.891, 'SegResNet': 0.851,
+REF = {'zero_shot_visionct': 0.843, 'TotalSeg_v2': 0.891, 'SegResNet': 0.851,
        'Swin UNETR (LEAKED)': 0.900, 'SuPreM (leaked)': 0.907}
 
 def collect(args):
@@ -42,7 +42,7 @@ def main():
     print('  per-organ:'); print('    ' + per.round(4).to_string().replace(chr(10), chr(10) + '    '))
     print('\n  reference (macro Dice):')
     for k, v in REF.items(): print(f'    {k:22s} {v:.3f}   (delta {macro - v:+.3f})')
-    print('  Goal: beat zero-shot Uniferum (0.843); fair leakage-free target = TotalSeg v2 (0.891).')
+    print('  Goal: beat zero-shot VISION-CT (0.843); fair leakage-free target = TotalSeg v2 (0.891).')
 
 if __name__ == '__main__':
     main()

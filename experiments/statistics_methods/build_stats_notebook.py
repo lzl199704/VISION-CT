@@ -8,7 +8,7 @@ nb = nbf.v4.new_notebook(); cells = []
 def md(s): cells.append(nbf.v4.new_markdown_cell(s))
 def code(s): cells.append(nbf.v4.new_code_cell(s))
 
-md("""# Statistical methods — Uniferum 3D CT study
+md("""# Statistical methods — VISION-CT 3D CT study
 
 Reference notebook for the intern: the **exact** statistical tests used in the paper, with runnable
 demos on synthetic data. Two settings:
@@ -90,9 +90,9 @@ def make(mean):
             rows.append(dict(patient_id=f'case{p:02d}', organ=o, gt_positive=True,
                              dice_score=float(np.clip(rng.normal(mean, 0.08), 0, 1))))
     return pd.DataFrame(rows)
-uni = make(0.84); base = make(0.90)     # e.g. Uniferum vs a baseline
+uni = make(0.84); base = make(0.90)     # e.g. VISION-CT vs a baseline
 m, lo, hi = dice_ci(uni)
-print(f'Uniferum  macro Dice {m:.4f}  (95% CI {lo:.4f}-{hi:.4f})')
+print(f'VISION-CT  macro Dice {m:.4f}  (95% CI {lo:.4f}-{hi:.4f})')
 m, lo, hi = dice_ci(base)
 print(f'Baseline  macro Dice {m:.4f}  (95% CI {lo:.4f}-{hi:.4f})')''')
 

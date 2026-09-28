@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Score an AMOS/BTCV segmentation eval parquet -> macro Dice (+ per-organ).
 Usage:  python experiments/amos_seg_finetune/score_eval.py <eval_parquet> [amos|btcv]
-Compares against the zero-shot Uniferum and the fair (leakage-free) references."""
+Compares against the zero-shot VISION-CT and the fair (leakage-free) references."""
 import sys, pandas as pd, numpy as np
 EXCL={'amos':['prostate'],'btcv':[]}
-REF={'amos':{'zero_shot_uniferum':0.839,'TotalSeg_v2':0.905,'SegResNet':0.861,
+REF={'amos':{'zero_shot_visionct':0.839,'TotalSeg_v2':0.905,'SegResNet':0.861,
              'VISTA3D (LEAKED)':0.919,'SuPreM (leaked)':0.910},
-     'btcv':{'zero_shot_uniferum':0.843,'TotalSeg_v2':0.891,'SegResNet':0.851,
+     'btcv':{'zero_shot_visionct':0.843,'TotalSeg_v2':0.891,'SegResNet':0.851,
              'Swin UNETR (LEAKED)':0.900,'SuPreM (leaked)':0.907}}
 def main():
     path=sys.argv[1]; ds=sys.argv[2] if len(sys.argv)>2 else ('btcv' if 'btcv' in path.lower() else 'amos')
@@ -22,5 +22,5 @@ def main():
     print('  per-organ:'); print(per.round(4).to_string().replace(chr(10),chr(10)+'    '))
     print('\n  reference (macro Dice):')
     for k,v in REF[ds].items(): print(f'    {k:22s} {v:.3f}   (delta {macro-v:+.3f})')
-    print('  Goal: beat the LEAKAGE-FREE references (zero-shot Uniferum, TotalSeg v2, SegResNet).')
+    print('  Goal: beat the LEAKAGE-FREE references (zero-shot VISION-CT, TotalSeg v2, SegResNet).')
 if __name__=='__main__': main()

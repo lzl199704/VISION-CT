@@ -4,7 +4,7 @@ Fine-tune (or train from scratch) a MONAI **SwinUNETR** on AMOS with 5-fold pati
 cross-validation; report per-organ + macro Dice. Same SwinUNETR architecture as the
 `swin_unetr_btcv_segmentation` bundle used as the zero-shot Stage-1 baseline, so results are directly
 comparable to that baseline, to the SegResNet AMOS CV (`../segresnet_finetune`, identical folds), and to
-Uniferum / TotalSegmentator.
+VISION-CT / TotalSegmentator.
 
 ```
 swinunetr_amos_finetune/
@@ -27,7 +27,7 @@ swinunetr_amos_finetune/
 ## Run (mrseg env has monai)
 ```bash
 PY=python
-cd ${HOME}/projects/RadVILLA/uniferum_release/experiments/swinunetr_amos_finetune
+cd <repo-root>/experiments/swinunetr_amos_finetune
 $PY prep_folds.py                                  # once (or reuse the copied folds)
 
 # fine-tune from BTCV-pretrained SwinUNETR (DEFAULT), all 5 folds + aggregate

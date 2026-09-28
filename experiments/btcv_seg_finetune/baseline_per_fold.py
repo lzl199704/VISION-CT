@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Reference baseline macro Dice on each BTCV fold's held-out test patients.
-Lets the intern compare a fold's fine-tuned Uniferum test Dice against the baselines
+Lets the intern compare a fold's fine-tuned VISION-CT test Dice against the baselines
 on the SAME 6 test cases. Macro = mean over 7 organs of per-organ mean Dice (GT-positive).
 Writes baseline_reference_per_fold.csv."""
 import pandas as pd, numpy as np, os
@@ -28,4 +28,4 @@ rows.append({'fold':'ALL30','n_test':30,**{n:round(macro(d,allp),4) for n,d in b
 df=pd.DataFrame(rows)
 df.to_csv(f'{OUT}/baseline_reference_per_fold.csv',index=False)
 print(df.to_string(index=False))
-print('\n(Uniferum zero-shot all-30 BTCV macro Dice = 0.843; fine-tune should beat that and approach TotalSeg_v2.)')
+print('\n(VISION-CT zero-shot all-30 BTCV macro Dice = 0.843; fine-tune should beat that and approach TotalSeg_v2.)')

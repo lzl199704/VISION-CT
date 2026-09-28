@@ -4,7 +4,7 @@ Fine-tune (or train from scratch) a MONAI **SegResNet** on AMOS and BTCV **separ
 patient-disjoint cross-validation, and report per-organ + macro Dice. Same SegResNet architecture as
 the `wholeBody_ct_segmentation` bundle used as the zero-shot Stage-1 baseline, so the fine-tuned
 numbers are directly comparable to that baseline (AMOS 0.861 / BTCV 0.851 zero-shot), TotalSegmentator,
-and Uniferum.
+and VISION-CT.
 
 ```
 segresnet_finetune/
@@ -33,7 +33,7 @@ segresnet_finetune/
 ## Run (mrseg env has monai)
 ```bash
 PY=python
-cd ${HOME}/projects/RadVILLA/uniferum_release/experiments/segresnet_finetune
+cd <repo-root>/experiments/segresnet_finetune
 $PY prep_folds.py                                  # once
 
 # fine-tune from wholeBody pretrained (DEFAULT), all 5 folds + aggregate
@@ -55,6 +55,6 @@ with per-organ and macro Dice **mean ± std** over the 5 folds.
   sliding-window inference (160³). Sweep `learning_rate`, `epochs`, `patch`, `batch_size` as needed.
 
 ## Comparison / next step
-To place these next to the existing Stage-1 table (zero-shot SegResNet / TotalSeg / Uniferum), optionally
+To place these next to the existing Stage-1 table (zero-shot SegResNet / TotalSeg / VISION-CT), optionally
 evaluate the best fold model on the standard held-out test sets (`amos_seg_eval_8organ` / `btcv_seg_eval_7organ`)
 with the same scorer — the CV mean±std is the headline; a single-split test number aids the comparison.

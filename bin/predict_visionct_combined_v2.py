@@ -12,7 +12,7 @@ from transformers import AutoTokenizer
 from tqdm import tqdm
 from bin.utils import create_transform, load_yaml
 from data_utils.combined_vqa_dataset_chest import VQABinaryDataCollator, VQAMaskDataset
-from models.combined_multimodal_models import Uniferum
+from models.combined_multimodal_models import VisionCT
 from models.utils import load_safetensors
 
 mp.set_start_method("spawn", force=True)
@@ -68,7 +68,7 @@ def predict(rank: int, config, df_data: pd.DataFrame, ckpt_file: str, outputs):
     )
     
     # Load model
-    model = Uniferum(config).cuda(rank).eval() 
+    model = VisionCT(config).cuda(rank).eval() 
     model = load_safetensors(model, ckpt_file)
 
     local_outputs = []

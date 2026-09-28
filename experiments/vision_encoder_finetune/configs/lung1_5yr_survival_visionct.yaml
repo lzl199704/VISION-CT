@@ -1,7 +1,7 @@
 # LUNG1 / NSCLC-Radiomics — 5-year overall-survival (binary). Data prep already done
 # (intern handoff): raw-HU npz, split CSVs with img_file_path,label. See README §6.
-encoder_source: uniferum
-uniferum_ckpt: ${WEIGHTS_ROOT}/Step1_chest_ermi_sinai_0504_NO_AUG_updatedQA/checkpoint-75000/model.safetensors
+encoder_source: visionct
+visionct_ckpt: ${WEIGHTS_ROOT}/Step1_chest_ermi_sinai_0504_NO_AUG_updatedQA/checkpoint-75000/model.safetensors
 model_name: tf_efficientnetv2_b0.in1k
 
 task: binary
@@ -30,4 +30,4 @@ batch_size: 4
 epochs: 40
 num_workers: 8
 seed: 0
-output_dir: ${WEIGHTS_ROOT}/vf_runs/lung1_5yr_survival_uniferum
+output_dir: ${WEIGHTS_ROOT}/vf_runs/lung1_5yr_survival_visionct

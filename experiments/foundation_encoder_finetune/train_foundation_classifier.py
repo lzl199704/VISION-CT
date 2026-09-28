@@ -2,7 +2,7 @@
 """
 Fine-tune / linear-probe a *published 3D CT foundation vision encoder* on a downstream
 CT classification task — to compare **Merlin** (Stanford abdominal CT) and **CT-CLIP_v2**
-(CT-RATE chest CT) as downstream representations, alongside the chest-Uniferum vs ImageNet
+(CT-RATE chest CT) as downstream representations, alongside the chest VISION-CT vs ImageNet
 comparison in ../vision_encoder_finetune.
 
 Unlike that sibling kit, Merlin and CT-CLIP are *different architectures* with their *own*

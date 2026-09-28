@@ -1,7 +1,7 @@
 # LUNG1 histology classification (multiclass). Uses the PRE-NORMALISED npz
 # (npz_histology_preprocessed, already [0,1]) -> prewindowed: true (no re-windowing).
 encoder_source: imagenet
-uniferum_ckpt: ${WEIGHTS_ROOT}/Step1_chest_ermi_sinai_0504_NO_AUG_updatedQA/checkpoint-75000/model.safetensors
+visionct_ckpt: ${WEIGHTS_ROOT}/Step1_chest_ermi_sinai_0504_NO_AUG_updatedQA/checkpoint-75000/model.safetensors
 model_name: tf_efficientnetv2_b0.in1k
 
 task: multiclass

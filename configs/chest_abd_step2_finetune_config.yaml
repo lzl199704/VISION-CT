@@ -18,10 +18,10 @@
 #        abdomen findings need to match the specialist exposure.
 # Launch (DDP on ALL 8 GPUs; per-device 4 x 8 GPUs x grad_accum 1 = effective batch 32, identical to
 #        every published run, so max_steps stays 125,000):
-#   docker run -d --name uniferum_step2_0903 --gpus all --shm-size 64g --ipc=host --ulimit memlock=-1 \
+#   docker run -d --name visionct_step2_0903 --gpus all --shm-size 64g --ipc=host --ulimit memlock=-1 \
 #     --entrypoint torchrun -e NCCL_P2P_DISABLE=1 -e CUDA_DEVICE_ORDER=PCI_BUS_ID -e HF_HOME=/hf \
 #     -e OMP_NUM_THREADS=8 -v /raid:/raid -v $PWD:$PWD -v $HOME/.cache/huggingface:/hf -w $PWD \
-#     uniferum_train:latest --nproc_per_node 8 bin/train_semantic_seg_two_stage.py \
+#     visionct_train:latest --nproc_per_node 8 bin/train_semantic_seg_two_stage.py \
 #     --config_file configs/chest_abd_step2_finetune_config.yaml
 # GPU note: NCCL_P2P_DISABLE=1 is REQUIRED for 8-GPU runs on this host. Two NVLink P2P links are faulty,
 #        (4,5) and (6,7); NCCL aborts with "unhandled cuda error" on any GPU set containing both members

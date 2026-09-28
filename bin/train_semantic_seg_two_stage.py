@@ -19,7 +19,7 @@ from bin.utils import (
     save_yaml,
 )
 from data_utils.combined_vqa_dataset_path import VQABinaryDataCollator, VQAMaskDataset
-from models.combined_multimodal_models_semantic_v3 import Uniferum
+from models.combined_multimodal_models_semantic_v3 import VisionCT
 
 def load_vision_decoder_weights(model, ckpt_path):
     print(f"Loading vision encoder and decoder weights from {ckpt_path}...")
@@ -236,7 +236,7 @@ def register_nan_grad_hooks(model):
 
 def create_and_prepare_model(config):
     tokenizer = AutoTokenizer.from_pretrained(config["llm_args"]["model_id"])
-    model = Uniferum(config)
+    model = VisionCT(config)
     
     # Load checkpoint if resuming standard training (optimizer states etc)
     # But if finetuning from pretrain, we handle it separately

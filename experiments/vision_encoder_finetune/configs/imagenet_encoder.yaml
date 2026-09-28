@@ -1,7 +1,7 @@
 # ---- encoder ----
-encoder_source: imagenet          # 'uniferum' (chest-Uniferum weights) or 'imagenet'
-uniferum_ckpt: ${WEIGHTS_ROOT}/Step1_chest_ermi_sinai_0504_NO_AUG_updatedQA/checkpoint-75000/model.safetensors
-model_name: tf_efficientnetv2_b0.in1k   # must match the Uniferum backbone
+encoder_source: imagenet          # 'visionct' (chest VISION-CT weights) or 'imagenet'
+visionct_ckpt: ${WEIGHTS_ROOT}/Step1_chest_ermi_sinai_0504_NO_AUG_updatedQA/checkpoint-75000/model.safetensors
+model_name: tf_efficientnetv2_b0.in1k   # must match the VISION-CT backbone
 
 # ---- task (EDIT for your CSV: binary | multiclass | multilabel) ----
 task: binary

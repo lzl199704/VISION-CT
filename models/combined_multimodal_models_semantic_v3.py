@@ -256,7 +256,7 @@ class Unified3DSegmentationDecoder(nn.Module):
         return x
 
 
-class Uniferum(BertModel):
+class VisionCT(BertModel):
     config_class = BertConfig
 
     def __init__(self, config):

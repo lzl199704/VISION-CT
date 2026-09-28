@@ -39,7 +39,7 @@ from transformers import AutoTokenizer
 
 from bin.utils import create_transform, load_yaml
 from data_utils.combined_vqa_dataset_semantic import VQABinaryDataCollator, VQAMaskDataset
-from models.combined_multimodal_models_semantic_v3 import Uniferum
+from models.combined_multimodal_models_semantic_v3 import VisionCT
 from models.utils import load_safetensors
 
 mp.set_start_method("spawn", force=True)
@@ -128,7 +128,7 @@ def evaluate_worker(
         pin_memory=True,
     )
 
-    model = Uniferum(config).cuda(rank).eval()
+    model = VisionCT(config).cuda(rank).eval()
     model = load_safetensors(model, ckpt_file)
 
     if save_masks:

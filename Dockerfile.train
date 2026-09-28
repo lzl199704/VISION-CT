@@ -1,4 +1,4 @@
-# Training/eval image for the Uniferum CT pipelines (chest, abdomen, combined chest+abdomen).
+# Training/eval image for the VISION-CT CT pipelines (chest, abdomen, combined chest+abdomen).
 #
 # Base `vlm3d_abnclass_r8` already carries the pinned model stack that matches this host's
 # NVIDIA driver 535.54.03 / CUDA 12.2:  python 3.10, torch 2.3.0+cu121, transformers 4.45.0,
@@ -8,9 +8,9 @@
 #   pyarrow      parquet manifests
 #   matplotlib, SimpleITK, acvl_utils, zstandard   img_utils/img_process.py, img_utils/zst_utils.py
 #
-# Build:  docker build -f Dockerfile.train -t uniferum_train:latest .
+# Build:  docker build -f Dockerfile.train -t visionct_train:latest .
 # Run  :  docker run --rm --gpus '"device=0,1,2,3,4,5,6,7"' --shm-size 32g \
-#           -v /raid:/raid -v $PWD:/work -w /work uniferum_train:latest \
+#           -v /raid:/raid -v $PWD:/work -w /work visionct_train:latest \
 #           bin/train_semantic_seg_two_stage.py --config_file configs/chest_abd_step1_pretrain_seg_config.yaml
 FROM vlm3d_abnclass_r8:latest
 
